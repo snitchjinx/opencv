@@ -1,0 +1,37 @@
+#include <opencv2\opencv.hpp>    
+
+int main()
+{
+	IplImage *img = cvLoadImage("pp.jpg");
+	//获取图像的参数    
+	printf("width=%d\n", img->width);
+	printf("height=%d\n", img->height);
+	printf("channel=%d\n", img->nChannels);
+
+	if (img->nChannels == 3)
+	{
+		//新建一个与img一样大的一通道空图像    
+		IplImage *dst = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
+		//将彩色图像转化为一通道灰度图    
+		cvCvtColor(img, dst, CV_RGB2GRAY);
+		img = dst;
+	}
+
+	for (int y = img->height / 2; y < img->height; y++)
+	{
+		uchar* ptr = (uchar*)(img->imageData + y*img->widthStep);
+		for (int x = img->width / 2; x < img->width; x++)
+		{
+			ptr[x + 1] = 255;
+			ptr[x + 2] = 255;
+			ptr[x + 3] = 255;
+		}
+	}
+
+	cvNamedWindow("example", CV_WINDOW_AUTOSIZE);
+	cvShowImage("example", img);
+
+	cvWaitKey(0);
+	cvReleaseImage(&img);
+	cvDestroyWindow("example");
+}
